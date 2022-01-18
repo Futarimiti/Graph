@@ -5,7 +5,7 @@ class Vertex(content : Any = "default content")
 {
 	/**
 	 * content of this vertex, with type currently set to Any.
-	 * may be changed later with generic.
+	 * may be updated later with generic.
 	 */
 	var content : Any
 	
@@ -15,56 +15,33 @@ class Vertex(content : Any = "default content")
 	}
 	
 	/**
-	 * degree: the number of times this vertex is used as an endpoint.
-	 * degree should only be changed as
-	 *
-	 * set to val as should be immutable outside the
+	 * degree, number of times this vertex is used as an endpoint.
+	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
+	 * which should only be called within class Edge. Still needs update on this. TODO
 	 */
-	val degree : Int
-		get()
-		{
-			return degree0
-		}
+	var degree : Int = 0
+		private set
 	
 	/**
-	 * mutable degree, to be used within func $newNeighbour(Vertex)
+	 * the set of neighbours (i.e. adjacent vertices) for this vertex.
+	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
+	 * which should only be called within class Edge. Still needs update on this. TODO
 	 */
-	private var degree0 : Int = 0
+	var neighbours : MutableSet<Vertex> = mutableSetOf()
+		private set
 	
 	/**
 	 * to be called by Edge init when linking 2 vertices.
-	 * previously moved to class Edge as private extension func to not be used elsewhere
-	 * now moved back as problem solved
+	 * previously moved to class Edge as private extension func to not be used elsewhere;
+	 * now moved back as problem solved.
 	 *
 	 * TODO: should only be used within this class and in class Edge
 	 */
 	fun newNeighbour(other : Vertex)
 	{
-		this.neighbours0.add(other)
-		this.degree0++
+		this.neighbours += other
+		this.degree++
 	}
-	
-	/**
-	 * a set of adjacent vertices of this vertex. will include itself if involved in self loop
-	 * ref: https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)
-	 * read-only, returns $neighbours0 when accessed.
-	 * the values should only be changed via $neighbours0 via func $newNeighbour(Vertex), as represented in get()
-	 * designed so on purpose to avoid abuse.
-	 */
-	val neighbours : Set<Vertex>
-		get()
-		{
-			return this.neighbours0
-		}
-	
-	/**
-	 * the set of neighbours for this vertex.
-	 * different from $neighbours, this set is mutable as designed to be updated
-	 * everytime new edges has been constructed.
-	 * set to private to avoid external abuse. should only be used in func $newNeighbour(Vertex)
-	 * which should only be used within class Edge.
-	 */
-	private var neighbours0 : MutableSet<Vertex> = mutableSetOf()
 	
 	/**
 	 * states if this vertex is isolated.
@@ -84,7 +61,7 @@ class Vertex(content : Any = "default content")
 	 */
 	fun isAdjacentTo(other : Vertex) : Boolean
 	{
-		return neighbours0.contains(other)
+		return neighbours.contains(other)
 	}
 	
 	/**
