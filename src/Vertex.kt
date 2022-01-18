@@ -31,10 +31,7 @@ class Vertex(content : Any = "default content")
 		private set
 	
 	/**
-	 * to be called by Edge init when linking 2 vertices.
-	 * previously moved to class Edge as private extension func to not be used elsewhere;
-	 * now moved back as problem solved.
-	 *
+	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices.
 	 * TODO: should only be used within this class and in class Edge
 	 */
 	fun newNeighbour(other : Vertex)

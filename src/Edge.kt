@@ -3,29 +3,22 @@
  * self-loop and parallel edges are allowed.
  */
 class Edge
-private constructor(endPoint1 : Vertex , endPoint2 : Vertex)
+/** instantiate with two end points of this edge. */
+private constructor(val endPoint1 : Vertex , val endPoint2 : Vertex)
 {
-	/**
-	 * two end points of this edge.
-	 */
-	var endPoint1 : Vertex
-	var endPoint2 : Vertex
-	
 	companion object
 	{
+		/**
+		 * use this func to instantiate Edge.
+		 * constructors should not be accessible.
+		 */
 		fun linkOf(endPoint1 : Vertex , endPoint2 : Vertex) : Edge
 		{
+			endPoint1.newNeighbour(endPoint2)
+			endPoint2.newNeighbour(endPoint1)
+			
 			return Edge(endPoint1 , endPoint2)
 		}
-	}
-	
-	init
-	{
-		endPoint1.newNeighbour(endPoint2)
-		endPoint2.newNeighbour(endPoint1)
-		
-		this.endPoint1 = endPoint1
-		this.endPoint2 = endPoint2
 	}
 	
 	/**
