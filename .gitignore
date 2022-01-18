@@ -27,9 +27,6 @@ hs_err_pid*
 *.iml
 .DS_Store
 
-# ignore temp directory (temporary tests) and Main files (code tests) #
-src/temp
-#src/Main.kt # this doesnt work; Main.kt has been existing before applying VCS.
-# to make it untracked, delete this remake a new Main.kt instead.
-# [deleted and recreated `Main.kt`]
-src/Main.kt
+# ignore all temp directories (temporary tests) and Main files (code tests) anywhere under src/
+src/**/temp
+src/**/Main.*
