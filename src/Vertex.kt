@@ -2,19 +2,8 @@
  * represents a vertex in a graph.
  * TODO: generify
  */
-class Vertex(content : Any = "default content")
+class Vertex(var content : Any)
 {
-	/**
-	 * content of this vertex, with type currently set to Any.
-	 * may be updated later with generic.
-	 */
-	var content : Any
-	
-	init
-	{
-		this.content = content
-	}
-	
 	/**
 	 * degree, number of times this vertex is used as an endpoint.
 	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
