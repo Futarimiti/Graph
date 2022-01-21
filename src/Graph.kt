@@ -1,3 +1,5 @@
+import Vertex.Edge
+
 /**
  * represents a graph as an integration of edges and vertices.
  */
