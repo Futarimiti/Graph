@@ -18,6 +18,11 @@ class Graph(var edges : Array<Edge> = arrayOf() , var vertices : Array<Vertex> =
 	val isCycleGraph : Boolean
 		get()
 		{
+			for (e : Edge in edges)
+			{
+				if (e.isSelfLoop) return edges.size == 2
+			}
+			
 			return this.edges.size == this.vertices.size
 		}
 }
