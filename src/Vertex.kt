@@ -93,7 +93,7 @@ class Vertex(content : Any = "default content")
 		 * determines if this edge is parallel to another edge
 		 * (having two identical endpoints)
 		 */
-		fun isParallelTo(other : Edge) : Boolean
+		infix fun isParallelTo(other : Edge) : Boolean
 		{
 			if (this === other) return false // not the same edge
 			return this.equals0(other)
@@ -132,7 +132,7 @@ class Vertex(content : Any = "default content")
 	 * if such an edge exists, the vertex belongs to its own neighbourhood.
 	 * ref: https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)
 	 */
-	fun isAdjacentTo(other : Vertex) : Boolean
+	infix fun isAdjacentTo(other : Vertex) : Boolean
 	{
 		return neighbours.contains(other)
 	}
@@ -140,7 +140,7 @@ class Vertex(content : Any = "default content")
 	/**
 	 * compares contents of two vertices.
 	 */
-	private fun contentEquals(other : Vertex) : Boolean
+	infix fun contentEquals(other : Vertex) : Boolean
 	{
 		return this.content == other.content
 	}
