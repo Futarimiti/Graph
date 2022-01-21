@@ -10,4 +10,14 @@ class Graph(var edges : Array<Edge> = arrayOf() , var vertices : Array<Vertex> =
 		{
 			return this.edges.isEmpty()
 		}
+	
+	/**
+	 * determines if a graph is a cycle graph:
+	 * a graph with n vertices and n edges
+	 */
+	val isCycleGraph : Boolean
+		get()
+		{
+			return this.edges.size == this.vertices.size
+		}
 }

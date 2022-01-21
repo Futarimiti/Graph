@@ -1,5 +1,6 @@
 /**
  * represents a vertex in a graph.
+ * TODO: generify
  */
 class Vertex(content : Any = "default content")
 {
@@ -42,7 +43,7 @@ class Vertex(content : Any = "default content")
 	/**
 	 * represents a non-directional edge incidenting on two vertices in a graph.
 	 * self-loop and parallel edges are allowed.
-	 * nested within class Vertex to guarantee access of func newNeighbour.
+	 * nested to guarantee the ONLY access to func $newNeighbour.
 	 */
 	class Edge
 	/** instantiate with two end points of this edge. */
@@ -150,7 +151,7 @@ class Vertex(content : Any = "default content")
 	 */
 	override fun equals(other : Any?) : Boolean
 	{
-		return this === other
+		return this === other // null safe
 	}
 	
 	override fun hashCode() : Int
