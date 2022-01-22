@@ -2,7 +2,7 @@
  * represents a vertex in a graph.
  * TODO: generify
  */
-class Vertex(var content : Any)
+class Vertex<VertexType>(var content : VertexType)
 {
 	/**
 	 * degree, number of times this vertex is used as an endpoint.
@@ -17,13 +17,13 @@ class Vertex(var content : Any)
 	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
 	 * which should only be called within class Edge.
 	 */
-	var neighbours : MutableSet<Vertex> = mutableSetOf()
+	var neighbours : MutableSet<Vertex<VertexType>> = mutableSetOf()
 		private set
 	
 	/**
 	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
 	 */
-	private infix fun friends(other : Vertex)
+	private infix fun friends(other : Vertex<VertexType>)
 	{
 		this.neighbours += other
 		other.neighbours += this
@@ -35,7 +35,7 @@ class Vertex(var content : Any)
 	 * ONLY to be called by Graph.unlink(Vertex , Vertex) when linking 2 vertices
 	 * when used two vertices are guaranteed to be linked previously
 	 */
-	private infix fun unfriends(other : Vertex)
+	private infix fun unfriends(other : Vertex<VertexType>)
 	{
 		this.neighbours -= other
 		other.neighbours -= this
@@ -48,9 +48,9 @@ class Vertex(var content : Any)
 	 * self-loop and parallel edges are allowed.
 	 * nested to guarantee the ONLY access to func $newNeighbour.
 	 */
-	class Edge
+	class Edge<EdgeType>
 	/** instantiate with two end points of this edge. */
-	private constructor(val endPoint1 : Vertex , val endPoint2 : Vertex)
+	private constructor(val endPoint1 : Vertex<EdgeType> , val endPoint2 : Vertex<EdgeType>)
 	{
 		companion object
 		{
@@ -58,17 +58,18 @@ class Vertex(var content : Any)
 			 * while constructors are privatised, use this func for instantiation.
 			 */
 			@JvmStatic
-			fun linkOf(endPoint1 : Vertex , endPoint2 : Vertex) : Edge
+			fun <TLinkOf> linkOf(endPoint1 : Vertex<TLinkOf> , endPoint2 : Vertex<TLinkOf>) : Edge<TLinkOf>
 			{
 				endPoint1 friends endPoint2
-				return Edge(endPoint1 , endPoint2)
+				return Edge<TLinkOf>(endPoint1 , endPoint2)
 			}
 		}
 		
 		/**
 		 * represents a graph as an integration of edges and vertices.
 		 */
-		class Graph(var edges : List<Edge> = mutableListOf() , var vertices : Array<Vertex> = arrayOf())
+		class Graph<GraphType>(var edges : List<Edge<GraphType>> = mutableListOf() ,
+		                       var vertices : Array<Vertex<GraphType>> = arrayOf())
 		{
 			val isNullGraph : Boolean
 				get()
@@ -81,7 +82,7 @@ class Vertex(var content : Any)
 			 * @return true if successfully unlinked, false if two vertices were not linked or do not exist in this graph
 			 * @throws NoSuchElementException when two vertices are adjacent but one with degree 0 (unexpected)
 			 */
-			fun unlink(endPoint1 : Vertex , endPoint2 : Vertex) : Boolean
+			fun unlink(endPoint1 : Vertex<GraphType> , endPoint2 : Vertex<GraphType>) : Boolean
 			{
 				if (endPoint1 !in this.vertices || endPoint2 !in this.vertices) return false
 				if (!(endPoint1 isAdjacentTo endPoint2)) return false
@@ -112,7 +113,7 @@ class Vertex(var content : Any)
 			if (this === other) return true
 			if (this.javaClass != other!!.javaClass) return false
 			
-			return this.equals0(other as Edge)
+			return equals0(other as Edge<*>)
 		}
 		
 		override fun hashCode() : Int
@@ -124,7 +125,7 @@ class Vertex(var content : Any)
 		 * determines if this edge is parallel to another edge
 		 * (having two identical endpoints)
 		 */
-		infix fun isParallelTo(other : Edge) : Boolean
+		infix fun isParallelTo(other : Edge<EdgeType>) : Boolean
 		{
 			if (this === other) return false // not the same edge
 			return this.equals0(other)
@@ -132,11 +133,12 @@ class Vertex(var content : Any)
 		
 		/**
 		 * compares self with an Edge obj
+		 * I'd like to force it compares to Edge obj of this generic, but I cannot check generic
 		 */
-		private fun equals0(other : Edge) : Boolean
+		private fun equals0(other : Edge<*>) : Boolean
 		{        // compare addr as vertex content may be repeating
 			if (this.endPoint1 === other.endPoint1) return this.endPoint2 === other.endPoint2
-			else if (this.endPoint1 === other.endPoint2) return this.endPoint2 === other.endPoint1
+			if (this.endPoint1 === other.endPoint2) return this.endPoint2 === other.endPoint1
 			
 			return false
 		}
@@ -159,7 +161,7 @@ class Vertex(var content : Any)
 	/**
 	 * determines if this vertex is adjacent to another vertex by checking their $neighbours.
 	 */
-	infix fun isAdjacentTo(other : Vertex) : Boolean
+	infix fun isAdjacentTo(other : Vertex<VertexType>) : Boolean
 	{
 		if (other in this.neighbours)
 		{
@@ -173,7 +175,7 @@ class Vertex(var content : Any)
 	/**
 	 * compares contents of two vertices.
 	 */
-	infix fun contentEquals(other : Vertex) : Boolean
+	infix fun contentEquals(other : Vertex<VertexType>) : Boolean
 	{
 		return this.content == other.content
 	}
