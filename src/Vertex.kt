@@ -32,7 +32,7 @@ class Vertex(var content : Any)
 	}
 	
 	/**
-	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
+	 * ONLY to be called by Graph.unlink(Vertex , Vertex) when linking 2 vertices
 	 * when used two vertices are guaranteed to be linked previously
 	 */
 	private infix fun unfriends(other : Vertex)
@@ -63,23 +63,38 @@ class Vertex(var content : Any)
 				endPoint1 friends endPoint2
 				return Edge(endPoint1 , endPoint2)
 			}
+		}
+		
+		/**
+		 * represents a graph as an integration of edges and vertices.
+		 */
+		class Graph(var edges : List<Edge> = mutableListOf() , var vertices : Array<Vertex> = arrayOf())
+		{
+			val isNullGraph : Boolean
+				get()
+				{
+					return this.edges.isEmpty()
+				}
 			
 			/**
-			 * unlinks two vertices.
-			 * @return true if two vertices are unlinked, false if two vertices were not linked
+			 * unlinks two vertices in a graph.
+			 * @return true if successfully unlinked, false if two vertices were not linked or do not exist in this graph
 			 * @throws NoSuchElementException when two vertices are adjacent but one with degree 0 (unexpected)
 			 */
 			fun unlink(endPoint1 : Vertex , endPoint2 : Vertex) : Boolean
 			{
-				if (endPoint1 isAdjacentTo endPoint2)
-				{    // if passed, ep1 contains ep2 and vice versa
-					
-					if (endPoint1.degree > 0 && endPoint2.degree > 0) endPoint1 unfriends endPoint2
-					else throw NoSuchElementException("Unexpected: Two vertices are adjacent but one with degree 0")
-					
-					return true
-				}
-				return false
+				if (endPoint1 !in this.vertices || endPoint2 !in this.vertices) return false
+				if (!(endPoint1 isAdjacentTo endPoint2)) return false
+				
+				// if passed, ep1 contains ep2 and vice versa
+				
+				if (endPoint1.degree > 0 && endPoint2.degree > 0)
+				{
+					endPoint1 unfriends endPoint2
+					this.edges -= Edge(endPoint1 , endPoint2)
+				} else throw NoSuchElementException("Unexpected: Two vertices are adjacent but one with degree 0")
+				
+				return true
 			}
 		}
 		
@@ -89,22 +104,20 @@ class Vertex(var content : Any)
 		val isSelfLoop : Boolean
 			get()
 			{
-				return endPoint1 == endPoint2
+				return endPoint1 === endPoint2
 			}
 		
 		override fun equals(other : Any?) : Boolean
 		{
 			if (this === other) return true
-			if (javaClass != other!!.javaClass) return false
+			if (this.javaClass != other!!.javaClass) return false
 			
 			return this.equals0(other as Edge)
 		}
 		
 		override fun hashCode() : Int
 		{
-			var result = endPoint1.hashCode()
-			result = 31 * result + endPoint2.hashCode()
-			return result
+			return endPoint1.hashCode() + endPoint2.hashCode()
 		}
 		
 		/**
