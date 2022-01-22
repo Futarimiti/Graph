@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 /**
  * represents a vertex in a graph.
  * TODO: generify
@@ -48,6 +50,7 @@ class Vertex<VertexType>(var content : VertexType)
 	 * self-loop and parallel edges are allowed.
 	 * nested to guarantee the ONLY access to func $newNeighbour.
 	 */
+	@Suppress("RemoveExplicitTypeArguments")
 	class Edge<EdgeType>
 	/** instantiate with two end points of this edge. */
 	private constructor(val endPoint1 : Vertex<EdgeType> , val endPoint2 : Vertex<EdgeType>)
@@ -68,8 +71,8 @@ class Vertex<VertexType>(var content : VertexType)
 		/**
 		 * represents a graph as an integration of edges and vertices.
 		 */
-		class Graph<GraphType>(var edges : List<Edge<GraphType>> = mutableListOf() ,
-		                       var vertices : Array<Vertex<GraphType>> = arrayOf())
+		class Graph<GraphType>(var edges : MutableList<Edge<GraphType>> = mutableListOf() ,
+		                       var vertices : MutableList<Vertex<GraphType>> = mutableListOf())
 		{
 			val isNullGraph : Boolean
 				get()
@@ -78,9 +81,9 @@ class Vertex<VertexType>(var content : VertexType)
 				}
 			
 			/**
-			 * unlinks two vertices in a graph.
+			 * unlinks two vertices in a graph by appointing two vertices.
 			 * @return true if successfully unlinked, false if two vertices were not linked or do not exist in this graph
-			 * @throws NoSuchElementException when two vertices are adjacent but one with degree 0 (unexpected)
+			 * @throws NoSuchElementException when unexpected behaviour occurs.
 			 */
 			fun unlink(endPoint1 : Vertex<GraphType> , endPoint2 : Vertex<GraphType>) : Boolean
 			{
@@ -97,6 +100,23 @@ class Vertex<VertexType>(var content : VertexType)
 				
 				return true
 			}
+			
+			/**
+			 * unlinks an edge in a graph by appointing an edge.
+			 * @return true if the edge is successfully unlinked, false if this edge is not found
+			 */
+			fun unlink(e : Edge<GraphType>) : Boolean
+			{
+				if (e !in this.edges) return false
+				
+				this.edges -= e
+				return true
+			}
+			
+			override fun toString() : String
+			{
+				return "Graph(edges=$edges, vertices=$vertices)"
+			}
 		}
 		
 		/**
@@ -108,6 +128,9 @@ class Vertex<VertexType>(var content : VertexType)
 				return endPoint1 === endPoint2
 			}
 		
+		/**
+		 * if two edges have the same endpoints, they are identical
+		 */
 		override fun equals(other : Any?) : Boolean
 		{
 			if (this === other) return true
@@ -132,15 +155,12 @@ class Vertex<VertexType>(var content : VertexType)
 		}
 		
 		/**
-		 * compares self with an Edge obj
+		 * compares self with an Edge obj to check if both have the same endpoints
 		 * I'd like to force it compares to Edge obj of this generic, but I cannot check generic
 		 */
 		private fun equals0(other : Edge<*>) : Boolean
 		{        // compare addr as vertex content may be repeating
-			if (this.endPoint1 === other.endPoint1) return this.endPoint2 === other.endPoint2
-			if (this.endPoint1 === other.endPoint2) return this.endPoint2 === other.endPoint1
-			
-			return false
+			return (this.endPoint1 === other.endPoint1 && this.endPoint2 === other.endPoint2) || (this.endPoint1 === other.endPoint2 && this.endPoint2 === other.endPoint1)
 		}
 		
 		override fun toString() : String
