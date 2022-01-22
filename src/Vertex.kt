@@ -23,10 +23,24 @@ class Vertex(var content : Any)
 	/**
 	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
 	 */
-	private fun newNeighbour(other : Vertex)
+	private infix fun friends(other : Vertex)
 	{
 		this.neighbours += other
+		other.neighbours += this
 		this.degree++
+		other.degree++
+	}
+	
+	/**
+	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
+	 * when used two vertices are guaranteed to be linked previously
+	 */
+	private infix fun unfriends(other : Vertex)
+	{
+		this.neighbours -= other
+		other.neighbours -= this
+		this.degree--
+		other.degree--
 	}
 	
 	/**
@@ -41,16 +55,31 @@ class Vertex(var content : Any)
 		companion object
 		{
 			/**
-			 * use this func to instantiate Edge.
-			 * constructors should not be accessible.
+			 * while constructors are privatised, use this func for instantiation.
 			 */
 			@JvmStatic
 			fun linkOf(endPoint1 : Vertex , endPoint2 : Vertex) : Edge
 			{
-				endPoint1.newNeighbour(endPoint2)
-				endPoint2.newNeighbour(endPoint1)
-				
+				endPoint1 friends endPoint2
 				return Edge(endPoint1 , endPoint2)
+			}
+			
+			/**
+			 * unlinks two vertices.
+			 * @return true if two vertices are unlinked, false if two vertices were not linked
+			 * @throws NoSuchElementException when two vertices are adjacent but one with degree 0 (unexpected)
+			 */
+			fun unlink(endPoint1 : Vertex , endPoint2 : Vertex) : Boolean
+			{
+				if (endPoint1 isAdjacentTo endPoint2)
+				{    // if passed, ep1 contains ep2 and vice versa
+					
+					if (endPoint1.degree > 0 && endPoint2.degree > 0) endPoint1 unfriends endPoint2
+					else throw NoSuchElementException("Unexpected: Two vertices are adjacent but one with degree 0")
+					
+					return true
+				}
+				return false
 			}
 		}
 		
@@ -115,15 +144,17 @@ class Vertex(var content : Any)
 		}
 	
 	/**
-	 * determines if this vertex is adjacent to another vertex.
-	 * if involved in self loop, itself is also a neighbour.
-	 * A special case is a loop that connects a vertex to itself
-	 * if such an edge exists, the vertex belongs to its own neighbourhood.
-	 * ref: https://en.wikipedia.org/wiki/Neighbourhood_(graph_theory)
+	 * determines if this vertex is adjacent to another vertex by checking their $neighbours.
 	 */
 	infix fun isAdjacentTo(other : Vertex) : Boolean
 	{
-		return neighbours.contains(other)
+		if (other in this.neighbours)
+		{
+			assert(this in other.neighbours) {"FATAL: A neighbours B but B does not neighbour A"}
+			return true
+		} else if (this in other.neighbours) throw AssertionError("FATAL: A neighbours B but B does not neighbour A")
+		
+		return false
 	}
 	
 	/**
@@ -132,20 +163,6 @@ class Vertex(var content : Any)
 	infix fun contentEquals(other : Vertex) : Boolean
 	{
 		return this.content == other.content
-	}
-	
-	/**
-	 * currently equals() compares if they are the same vertex by comparing memory addrs
-	 * may be subject to change
-	 */
-	override fun equals(other : Any?) : Boolean
-	{
-		return this === other // null safe
-	}
-	
-	override fun hashCode() : Int
-	{
-		return content.hashCode()
 	}
 	
 	/**
