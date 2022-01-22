@@ -2,7 +2,6 @@
 
 /**
  * represents a vertex in a graph.
- * TODO: generify
  */
 class Vertex<VertexType>(var content : VertexType)
 {
