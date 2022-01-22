@@ -7,7 +7,7 @@ class Vertex<VertexType>(var content : VertexType)
 {
 	/**
 	 * degree, number of times this vertex is used as an endpoint.
-	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
+	 * uses private setter to avoid external abuse. should only be used in func $friends(Vertex)
 	 * which should only be called within class Edge.
 	 */
 	var degree : Int = 0
@@ -15,7 +15,7 @@ class Vertex<VertexType>(var content : VertexType)
 	
 	/**
 	 * the set of neighbours (i.e. adjacent vertices) for this vertex.
-	 * uses private setter to avoid external abuse. should only be used in func $newNeighbour(Vertex)
+	 * uses private setter to avoid external abuse. should only be used in func $friends(Vertex)
 	 * which should only be called within class Edge.
 	 */
 	var neighbours : MutableSet<Vertex<VertexType>> = mutableSetOf()
@@ -47,7 +47,7 @@ class Vertex<VertexType>(var content : VertexType)
 	/**
 	 * represents a non-directional edge incidenting on two vertices in a graph.
 	 * self-loop and parallel edges are allowed.
-	 * nested to guarantee the ONLY access to func $newNeighbour.
+	 * nested to guarantee the ONLY access to func $friends and $unfriends.
 	 */
 	@Suppress("RemoveExplicitTypeArguments")
 	class Edge<EdgeType>
