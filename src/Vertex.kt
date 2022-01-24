@@ -18,8 +18,7 @@ class Vertex<VertexType>(var content : VertexType)
 	 * uses private setter to avoid external abuse. should only be used in func $friends(Vertex)
 	 * which should only be called within class Edge.
 	 */
-	var neighbours : MutableSet<Vertex<VertexType>> = mutableSetOf()
-		private set
+	val neighbours : MutableSet<Vertex<VertexType>> = mutableSetOf()
 	
 	/**
 	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
