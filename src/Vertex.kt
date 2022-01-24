@@ -18,15 +18,25 @@ class Vertex<VertexType>(var content : VertexType)
 	 * uses private setter to avoid external abuse. should only be used in func $friends(Vertex)
 	 * which should only be called within class Edge.
 	 */
-	val neighbours : MutableSet<Vertex<VertexType>> = mutableSetOf()
+	private val neighbours0 : MutableSet<Vertex<VertexType>> = mutableSetOf()
+	
+	/**
+	 * an immutable alias for $neighbours0
+	 * to prevent user from directly manipulating $neighbours0 (as a mutable set)
+	 */
+	val neighbours : Set<Vertex<VertexType>>
+		get()
+		{
+			return this.neighbours0
+		}
 	
 	/**
 	 * ONLY to be called by Edge.linkOf(Vertex , Vertex) when linking 2 vertices
 	 */
 	private infix fun friends(other : Vertex<VertexType>)
 	{
-		this.neighbours += other
-		other.neighbours += this
+		this.neighbours0 += other
+		other.neighbours0 += this
 		this.degree++
 		other.degree++
 	}
@@ -37,8 +47,8 @@ class Vertex<VertexType>(var content : VertexType)
 	 */
 	private infix fun unfriends(other : Vertex<VertexType>)
 	{
-		this.neighbours -= other
-		other.neighbours -= this
+		this.neighbours0 -= other
+		other.neighbours0 -= this
 		this.degree--
 		other.degree--
 	}
@@ -181,11 +191,11 @@ class Vertex<VertexType>(var content : VertexType)
 	 */
 	infix fun isAdjacentTo(other : Vertex<VertexType>) : Boolean
 	{
-		if (other in this.neighbours)
+		if (other in this.neighbours0)
 		{
-			assert(this in other.neighbours) {"FATAL: A neighbours B but B does not neighbour A"}
+			assert(this in other.neighbours0) {"FATAL: A neighbours B but B does not neighbour A"}
 			return true
-		} else if (this in other.neighbours) throw AssertionError("FATAL: A neighbours B but B does not neighbour A")
+		} else if (this in other.neighbours0) throw AssertionError("FATAL: A neighbours B but B does not neighbour A")
 		
 		return false
 	}
